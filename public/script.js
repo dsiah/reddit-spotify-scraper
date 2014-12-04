@@ -74,8 +74,10 @@
                 $('.green-light').append("<li><a href=" + anchor.link + ">" + anchor.name + "</a></li>");
                 ind++;
             });
-
-            console.log("Recieved : ", data); 
+            if (data) {
+                $('button.container').hide();
+                console.log("Recieved : ", data); 
+            }
         });
     }
 
