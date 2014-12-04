@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+	<title>Reddit Music Scraper</title>
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+	<style type="text/css">
+  	#login, #loggedin {
+		display: none;
+  	}
+  	
+    .container {
+        margin-left: auto;
+        margin-right: auto;
+        display: table;
+        width:50%;
+    }
+
+  	.text-overflow {
+    	overflow: hidden;
+    	text-overflow: ellipsis;
+    	white-space: nowrap;
+    	width: 500px;
+  	}
+
+    ul {
+        list-style-type: none;
+    }
+
+    </style> 
+</head>
+<body>
+	<div class="container" id="login">
+        <h1>Log Into Spotify to Access this App</h1>
+        <a href="/login" class="btn btn-primary">Log in with Spotify</a>
+        <h2>About</h2>
+        <div>
+        
+        <p>This app exposes two tools</p>
+        <h3>On the backend --</h3>
+        <p>A crude web scraping bot that will fetch the frontpage
+        of r/Music. It will fetch all the youtube links (and therefore no articles)
+        in order to find songs to add to the playlist...
+        </p>
+        <h3>On the frontend --</h3>
+        <p>An application that will require you to login to your spotify account,
+        and then redirect you back to the application. Then you will have the option
+        to send the songs that are trending (up to 25) into a playlist that will be
+        attributed to your spotify account.</p>
+
+        </div>
+	</div>
+	<div id="loggedin">
+        <div id="user-profile">
+        <!-- Template is injected here -->
+        </div>
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+    <script id="user-profile-template" type="text/x-handlebars-template">
+		<div class="media container">
+            <h2>Logged in as {{ display_name }} </h2>
+			<div class="pull-left">
+				<img class="media-object" width="75" src="{{ images.0.url }}" />
+			</div>
+			<div class="media-body">
+				<dl class="dl-horizontal">
+					<dt>Id</dt><dd class="idme">{{ id }}</dd>
+					<dt>Spotify URI</dt><dd><a href="{{ external_urls.spotify }}">{{ external_urls.spotify }}</a></dd>
+					<dt>Link</dt><dd><a href="{{ href }}">{{ href }}</a></dd>
+				</dl>
+			</div>
+		</div>
+
+		<div>
+
+			<h2 class="text-center">Trending on r/Music (Time to learn RegEx)</h2>
+            <button class="container" onclick="$.reddit($('.search-bar').val())">Scrape r/Music</button>
+            <ul class="green-light text-center"></ul>
+		</div>
+    </script>
+
+   	<script src="./script.js"></script>
+</body>
+</html>
