@@ -75,10 +75,14 @@
 
 		<div>
 
-			<h2 class="text-center">Trending on r/Music <p style="color: red;">attempted pattern : / ^ [ ^ \ [ \ ( ] / g</p></h2>
-            <button class="container" onclick="$.reddit($('.search-bar').val())">Scrape r/Music</button>
+			<h2 class="text-center">Trending on r/Music 
+                <button onclick="$.search()">Search</button>
+            </h2>
             <ul class="green-light text-center"></ul>
 		</div>
+        <div class="previews">
+            <button id="create" onclick="$.push()">Create</button>
+        </div>
     </script>
 
    	<script src="./script.js"></script>

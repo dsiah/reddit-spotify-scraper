@@ -10,7 +10,8 @@
     }
     var globalOb = {};
 
-    var userProfileSource = document.getElementById('user-profile-template').innerHTML;
+    var userProfileSource = 
+        document.getElementById('user-profile-template').innerHTML;
     var userProfileTemplate = Handlebars.compile(userProfileSource);
     var userProfilePlaceholder = document.getElementById('user-profile');
 
@@ -36,7 +37,8 @@
                   $('#login').hide();
                   $('#loggedin').show();
                   globalOb.idme = $('.idme').text();
-            	  //fetchplaylists(globalOb.idme);
+
+                  $.reddit();
                 }
             });
         } else {
@@ -46,32 +48,63 @@
         }
     }
 
-    /*
-    function fetchplaylists (idme) {
-        if (access_token) {
-        	$.ajax({
-        		url: 'https://api.spotify.com/v1/users/' + idme + '/playlists',
-        		headers: {
-        			'Authorization': 'Bearer ' + access_token
-        		},
-        		success: function (response) {
-        			console.log(response);
-        			//$('.green-light').text(JSON.stringify(response));
-                    for (var list in response.items) {
-                      $('.green-light').append("<p class='text-center'>" + response.items[list].name + "</p>");
-                    }
-        		}
-        	});
-        } 
-	}
-    */
+    
+    $.search = function () {
+        $.songs = {};
+        
+        var date = new Date();
+        date = date.toLocaleString();
+
+        $.ajax({
+            url: 'https://api.spotify.com/v1/users/' 
+                + $('.idme').text() + '/playlists',
+            type: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + access_token
+            },
+            data: '{ "name": "r/Music ' + date + '" }'
+        }).done(function (res) {
+            console.log('success: ', res.id);
+            $.playlist_id = res.id;
+        });
+        
+
+        $('li > a').each(function (index, item) { 
+            var pattern = item.text;
+            var reggie = /^[^\[\(]+/;
+
+            // pattern is processed using regex pattern
+            var piece = reggie.exec(pattern)[0];
+
+            piece = piece.replace(/-/g, '');
+            piece =  piece.replace(/  /g, '+');
+            piece =  piece.replace(/ /g, '+');
+
+            $.ajax({
+                url: 'https://api.spotify.com/v1/search?q=' 
+                    + piece + '&type=track',
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + access_token
+                }
+            }).done(function (res) {
+                var unit = res.tracks.items[0];
+                
+                $.songs[piece] = unit;
+                
+                $('.preview').append("<div><a href='" + unit.preview_url + "'>" 
+                    + unit.name + "</a></div>"); 
+            });
+        });
+    }
 
     $.reddit = function (query) {
         $.ajax('http://localhost:8888/api/' + query).done(function (data) {
             var ind = 1;
             
             data.anchors.forEach(function (anchor) {
-                $('.green-light').append("<li><a href=" + anchor.link + ">" + anchor.name + "</a></li>");
+                $('.green-light').append("<li><a href=" + anchor.link + ">" 
+                    + anchor.name + "</a></li>");
                 ind++;
             });
             if (data) {
@@ -81,4 +114,33 @@
         });
     }
 
+    $.push = function () {
+        var purl = "https://api.spotify.com/v1/users/" + $('.idme').text() 
+                    + "/playlists/" + $.playlist_id + "/tracks?uris=";  
+        var count = 0;
+        for (var song in $.songs) {
+            if (!$.songs[song])
+                continue;
+
+            var songuri = $.songs[song].uri;
+            songuri = songuri.replace(/:/g, '%3A');
+
+            if (count > 0)
+                purl += ',' + songuri;
+            else 
+                purl += songuri;
+
+            count++;
+        }
+        
+        $.ajax({
+            type: 'POST',
+            url: purl,
+            headers: {
+                'Authorization': 'Bearer ' + access_token
+            }
+        }).done(function (res) {
+            console.log(res);
+        });
+    }
 })();
