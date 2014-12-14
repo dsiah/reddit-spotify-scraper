@@ -26,6 +26,10 @@
         list-style-type: none;
     }
 
+    .accepted {
+        color: green;
+    }
+
     </style> 
 </head>
 <body>
@@ -76,12 +80,12 @@
 		<div>
 
 			<h2 class="text-center">Trending on r/Music 
-                <button onclick="$.search()">Search</button>
+                <button id="search" onclick="$.search()">Search</button>
+                <button id="create" onclick="$.push()">Create</button>
             </h2>
             <ul class="green-light text-center"></ul>
 		</div>
         <div class="previews">
-            <button id="create" onclick="$.push()">Create</button>
         </div>
     </script>
 
